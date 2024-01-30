@@ -1,0 +1,52 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    userId String @id @unique @default(uuid()) @map("user_id")
+
+    email              String  @unique
+    hashedPassword     String  @map("hashed_password")
+    hashedRefreshToken String? @map("hashed_refresh_token")
+
+    confirmationId String? @map("confirmation_id")
+    confirmed      Boolean @default(false)
+
+    roles Role[]
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    lastLogin DateTime @default(now()) @map("last_login")
+
+    Profile     Profile?
+    UserDetails UserDetails?
+}
+
+model UserDetails {
+    userId String @id @unique @map("user_id")
+
+    firstName String @map("first_name")
+    lastName  String @map("last_name")
+
+    User User @relation(fields: [userId], references: [userId])
+}
+
+model Profile {
+    userId String @id @unique @map("user_id")
+
+    displayName   String  @map("display_name")
+    avatarUrl     String? @map("avatar_url")
+    socialNetwork String? @map("social_network")
+
+    User User @relation(fields: [userId], references: [userId])
+}
+
+enum Role {
+    ADMIN
+    USER
+}
