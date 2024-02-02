@@ -48,8 +48,6 @@ export class EmailService {
         const from = this.configService.get<string>('RESEND_FROM_ADDRESS')
         const subject = 'Welcome to Play & Swap'
 
-        console.log(user)
-
         const username = user.Profile.displayName || 'user'
 
         const emailDataToReplace = { username }

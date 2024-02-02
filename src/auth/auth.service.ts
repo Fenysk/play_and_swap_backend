@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 import * as argon2 from "argon2";
 import { PublicUser } from 'src/users/entities/public-user.model';
 import { UsersService } from 'src/users/users.service';
@@ -42,6 +43,9 @@ export class AuthService {
         if (!user)
             throw new ForbiddenException('Access denied');
 
+        if (!user.confirmed)
+            throw new ForbiddenException('Your account is not confirmed yet');
+
         const isPasswordValid = await argon2.verify(user?.hashedPassword, loginDto.password);
 
         if (!isPasswordValid)
@@ -57,23 +61,23 @@ export class AuthService {
 
     async disconnect(userId: string): Promise<void> {
         await this.userService.updateUser(userId, {
-            refreshToken: null
+            hashedRefreshToken: null
         });
     }
 
     async refreshTokens(userId: string, refreshToken: string): Promise<Tokens> {
-        const user: any = await this.userService.getUserById(userId);
+        const user: User = await this.userService.getUserById(userId);
 
-        if (!user?.refreshToken)
+        if (!user?.hashedRefreshToken)
             throw new ForbiddenException('Access denied');
 
-        const isRefreshTokenValid = await argon2.verify(user.refreshToken, refreshToken);
+        const isRefreshTokenValid = await argon2.verify(user.hashedRefreshToken, refreshToken);
 
         if (!isRefreshTokenValid)
             throw new ForbiddenException('Access denied');
 
         const tokens = await this.getTokens(user);
-        await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
+        await this.updateRefreshTokenHash(user.userId, tokens.refreshToken);
 
         return tokens;
     }
@@ -99,9 +103,9 @@ export class AuthService {
 
 
 
-    async getTokens(user: any): Promise<Tokens> {
+    async getTokens(user: User): Promise<Tokens> {
         const payload = {
-            sub: user.id,
+            sub: user.userId,
             email: user.email
         };
 
@@ -124,7 +128,7 @@ export class AuthService {
         const hashedRefreshToken = await argon2.hash(refreshToken);
 
         await this.userService.updateUser(id, {
-            refreshToken: hashedRefreshToken
+            hashedRefreshToken
         });
     }
 

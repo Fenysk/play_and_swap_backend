@@ -22,7 +22,10 @@ export class UsersService {
     }
 
     async getUserById(id: string): Promise<any> {
-        const user = await this.prismaService.user.findUniqueOrThrow({ where: { userId: id } });
+        const user = await this.prismaService.user.findUnique({ where: { userId: id } });
+
+        if (!user)
+            throw new NotFoundException('No user found');
 
         delete user.hashedPassword;
 
@@ -30,15 +33,23 @@ export class UsersService {
     }
 
     async getUserByEmail(email: string): Promise<User> {
-        const user = await this.prismaService.user.findUniqueOrThrow({ where: { email } });
+        const user = await this.prismaService.user.findUnique({ where: { email } });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
         return user;
     }
 
     async getUserByConfirmationId(confirmationId: string): Promise<User> {
-        const user = await this.prismaService.user.findFirstOrThrow({
+        const user = await this.prismaService.user.findFirst({
             where: { confirmationId },
             include: { Profile: true }
         });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
         return user;
     }
 
@@ -76,6 +87,7 @@ export class UsersService {
                 where: { userId },
                 data
             });
+
             return updatedUser;
         } catch (error) {
             throw error
