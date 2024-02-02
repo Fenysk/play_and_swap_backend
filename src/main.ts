@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { JwtAccessTokenGuard } from './auth/guards/jwt-access-token.guard';
@@ -21,6 +22,11 @@ async function bootstrap() {
         new JwtAccessTokenGuard(new Reflector()),
         new RolesGuard(new Reflector())
     )
+
+    // DTO Validation
+    app.useGlobalPipes(new ValidationPipe({
+        whitelist: true
+    }))
 
     // CORS
     app.enableCors({

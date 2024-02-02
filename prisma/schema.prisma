@@ -25,6 +25,7 @@ model User {
 
     Profile     Profile?
     UserDetails UserDetails?
+    Item        Item[]
 }
 
 model UserDetails {
@@ -46,7 +47,81 @@ model Profile {
     User User @relation(fields: [userId], references: [userId])
 }
 
+model Item {
+    gameId     String @id @unique @default(uuid()) @map("game_id")
+    platformId String @map("platform_id")
+
+    sellerId    String @map("seller_id")
+    sellerPrice Int    @map("seller_price")
+
+    title    String
+    edition  String @default("Standard")
+    region   Region
+    imageUrl String @map("image_url")
+
+    hasGame   Boolean @default(false) @map("has_game")
+    stateGame State?  @map("state_game")
+
+    hasBox   Boolean @default(false) @map("has_box")
+    stateBox State?  @map("state_box")
+
+    hasManual   Boolean @default(false) @map("has_manual")
+    stateManual State?  @map("state_manual")
+
+    hasCover   Boolean @default(false) @map("has_cover")
+    stateCover State?  @map("state_cover")
+
+    extraContent String[] @map("extra_content")
+
+    isVisible Boolean @default(true)
+    isSold    Boolean @default(false)
+
+    Platform Platform @relation(fields: [platformId], references: [platformId])
+    Seller   User     @relation(fields: [sellerId], references: [userId])
+
+    views     Int      @default(0)
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Platform {
+    platformId String @id @unique @default(uuid()) @map("platform_id")
+
+    name         String       @unique
+    releaseDate  DateTime     @map("release_date")
+    manufacturer Manufacturer
+    generation   Int
+
+    logoUrl String? @map("logo_url")
+
+    Items Item[]
+}
+
 enum Role {
     ADMIN
     USER
+}
+
+enum State {
+    MINT
+    GOOD
+    AVERAGE
+    BAD
+    BROKEN
+}
+
+enum Manufacturer {
+    SONY
+    MICROSOFT
+    NINTENDO
+    SEGA
+    ATARI
+    PC
+    OTHER
+}
+
+enum Region {
+    PAL
+    NTSC
+    NTSC_J
 }
