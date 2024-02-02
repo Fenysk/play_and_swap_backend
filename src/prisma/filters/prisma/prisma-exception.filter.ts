@@ -11,20 +11,28 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         const message = exception.message || 'Something went wrong';
 
         const modelName = exception.meta.modelName;
+        let target: string[] = [];
+
+        const getTargets: any = (target: string[]) => {
+            if (Array.isArray(target))
+                return target.join(', ');
+
+            return [target];
+        };
 
         switch (exception.code) {
             case 'P2002':
-                let target = exception.meta.target as string[];
+                if (exception.meta.target)
+                    target = getTargets(exception.meta.target);
 
                 response.status(HttpStatus.CONFLICT).json({
                     statusCode: HttpStatus.CONFLICT,
-                    message: target.length > 0 ?
-                        `${modelName} with [${target.join(', ')}] already exists` :
-                        `${modelName} already exists`
+                    message: `${modelName} with [${target.join(', ')}] already exists`
                 });
                 break;
             case 'P2025':
-                target = exception.meta.target as string[];
+                if (exception.meta.target)
+                    target = exception.meta.target as string[];
 
                 response.status(HttpStatus.NOT_FOUND).json({
                     statusCode: HttpStatus.NOT_FOUND,
