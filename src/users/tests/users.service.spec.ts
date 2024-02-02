@@ -56,16 +56,15 @@ describe('UsersService', () => {
 
     describe('getAllUsers', () => {
 
-        it('should return an array of users', () => {
+        it('should return an array of users', async () => {
             const expectedResult: PublicUser[] = [publicUserExample, publicUserExample];
 
             const prismaResponse: User[] = [userExample, userExample];
             prismaService.user.findMany = jest.fn().mockResolvedValueOnce(prismaResponse);
 
+            const result = await usersService.getAllUsers();
 
-            const result = usersService.getAllUsers();
-
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.findMany).toHaveBeenCalled();
         });
 
@@ -87,16 +86,15 @@ describe('UsersService', () => {
 
     describe('getUserById', () => {
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
             const expectedResult: PublicUser = publicUserExample;
 
             const prismaResponse: User = userExample;
             prismaService.user.findUnique = jest.fn().mockResolvedValueOnce(prismaResponse);
 
+            const result = await usersService.getUserById('uuid-uuid-uuid-uuid');
 
-            const result = usersService.getUserById('uuid-uuid-uuid-uuid');
-
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.findUnique).toHaveBeenCalled();
         });
 
@@ -118,16 +116,16 @@ describe('UsersService', () => {
 
     describe('getUserByEmail', () => {
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
             const expectedResult: User = userExample;
 
             const prismaResponse: User = userExample;
             prismaService.user.findUnique = jest.fn().mockResolvedValueOnce(prismaResponse);
 
 
-            const result = usersService.getUserByEmail('maite@tf1.fr');
+            const result = await usersService.getUserByEmail('maite@tf1.fr');
 
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.findUnique).toHaveBeenCalled();
         });
 
@@ -148,16 +146,16 @@ describe('UsersService', () => {
 
     describe('getUserByConfirmationId', () => {
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
             const expectedResult: User = userExample;
 
             const prismaResponse: User = userExample;
             prismaService.user.findFirst = jest.fn().mockResolvedValueOnce(prismaResponse);
 
 
-            const result = usersService.getUserByConfirmationId('uuid2-uuid2-uuid2-uuid2');
+            const result = await usersService.getUserByConfirmationId('uuid2-uuid2-uuid2-uuid2');
 
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.findFirst).toHaveBeenCalled();
         });
 
@@ -187,16 +185,15 @@ describe('UsersService', () => {
         }
 
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
             const expectedResult: User = userExample;
 
             const prismaResponse: User = userExample;
             prismaService.user.create = jest.fn().mockResolvedValueOnce(prismaResponse);
 
+            const result = await usersService.createNewUser(newUser);
 
-            const result = usersService.createNewUser(newUser);
-
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.create).toHaveBeenCalled();
         });
 
@@ -215,19 +212,19 @@ describe('UsersService', () => {
 
     describe('updateUser', () => {
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
             const expectedResult: User = userExample;
 
             const prismaResponse: User = userExample;
             prismaService.user.update = jest.fn().mockResolvedValueOnce(prismaResponse);
 
 
-            const result = usersService.updateUser('uuid-uuid-uuid-uuid', {
+            const result = await usersService.updateUser('uuid-uuid-uuid-uuid', {
                 email: 'maite@tf1.fr',
                 hashedPassword: 'hashedPasswordAnguille',
             });
 
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.update).toHaveBeenCalled();
         });
 
@@ -263,16 +260,15 @@ describe('UsersService', () => {
     describe('deleteUser', () => {
 
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
             const expectedResult: string = 'maite@tf1.fr deleted';
 
             const prismaResponse: User = userExample;
             prismaService.user.delete = jest.fn().mockResolvedValueOnce(prismaResponse);
 
+            const result = await usersService.deleteUser('uuid-uuid-uuid-uuid');
 
-            const result = usersService.deleteUser('uuid-uuid-uuid-uuid');
-
-            expect(result).resolves.toEqual(expectedResult);
+            expect(result).toEqual(expectedResult);
             expect(prismaService.user.delete).toHaveBeenCalled();
         });
 
