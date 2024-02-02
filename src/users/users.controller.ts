@@ -13,6 +13,7 @@ export class UsersController {
         return await this.usersService.getAllUsers();
     }
 
+    @Roles(Role.USER)
     @Get('me')
     async getMe(@GetUser() user: any): Promise<object> {
         return user;
@@ -35,6 +36,13 @@ export class UsersController {
     @HttpCode(HttpStatus.OK)
     async updateMe(@GetUser('sub') user_id: any, @Body() data: any): Promise<object> {
         return await this.usersService.updateUser(user_id, data);
+    }
+
+    @Roles(Role.USER)
+    @Put('update/my-profile')
+    @HttpCode(HttpStatus.OK)
+    async updateMyProfile(@GetUser('sub') user_id: any, @Body() data: any): Promise<object> {
+        return await this.usersService.updateProfile(user_id, data);
     }
 
     @Roles(Role.ADMIN)

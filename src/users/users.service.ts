@@ -116,6 +116,30 @@ export class UsersService {
         return updatedUser;
     }
 
+    async updateProfile(userId: string, data: any): Promise<any> {
+        const user = await this.prismaService.user.findUnique({
+            where: { userId },
+            include: { Profile: true }
+        });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
+        const updatedUser = await this.prismaService.user.update({
+            where: { userId },
+            data: {
+                Profile: {
+                    update: data
+                }
+            },
+            select: {
+                Profile: true
+            }
+        });
+
+        return updatedUser;
+    }
+
     async deleteUser(userId: string): Promise<string> {
         try {
             const deletedUser = await this.prismaService.user.delete({

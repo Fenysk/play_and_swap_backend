@@ -21,7 +21,7 @@ describe('UsersService', () => {
         prismaService = module.get<PrismaService>(PrismaService);
     });
 
-    const userExample: User = {
+    const userExample: any = {
         userId: 'uuid-uuid-uuid-uuid',
 
         email: 'maite@tf1.fr',
@@ -32,6 +32,12 @@ describe('UsersService', () => {
         confirmed: true,
 
         roles: ['USER'],
+
+        Profile: {
+            userId: 'uuid-uuid-uuid-uuid',
+            displayName: 'Xx_Maïté_la_cuisinière_xX',
+            avatarUrl: 'https://static1.purepeople.com/articles/0/40/02/80/@/5755253-maite-lors-d-une-conference-de-presse-po-1200x0-3.jpg',
+        },
 
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -48,6 +54,12 @@ describe('UsersService', () => {
         confirmed: true,
 
         roles: ['USER'],
+
+        Profile: {
+            userId: 'uuid-uuid-uuid-uuid',
+            displayName: 'Xx_Maïté_la_cuisinière_xX',
+            avatarUrl: 'https://static1.purepeople.com/articles/0/40/02/80/@/5755253-maite-lors-d-une-conference-de-presse-po-1200x0-3.jpg',
+        },
 
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -259,7 +271,6 @@ describe('UsersService', () => {
 
     describe('deleteUser', () => {
 
-
         it('should return a user', async () => {
             const expectedResult: string = 'maite@tf1.fr deleted';
 
@@ -272,7 +283,7 @@ describe('UsersService', () => {
             expect(prismaService.user.delete).toHaveBeenCalled();
         });
 
-        it.only('should throw error if user does not exist', () => {
+        it('should throw error if user does not exist', () => {
             const expectedError: NotFoundException = new NotFoundException('No user found');
             prismaService.user.delete = jest.fn().mockRejectedValueOnce(expectedError);
 
@@ -281,6 +292,62 @@ describe('UsersService', () => {
 
             expect(result).rejects.toThrow(expectedError);
             expect(prismaService.user.delete).toHaveBeenCalled();
+        });
+
+    });
+
+
+    describe('updateMyProfile', () => {
+
+        const updatedUser = {
+            userId: 'uuid-uuid-uuid-uuid',
+
+            email: 'maite@tf1.fr',
+            hashedPassword: 'hashedPassword',
+            hashedRefreshToken: 'hashedRefreshToken',
+
+            confirmationId: 'uuid2-uuid2-uuid2-uuid2',
+            confirmed: true,
+
+            roles: ['USER'],
+
+            Profile: {
+                userId: 'uuid-uuid-uuid-uuid',
+                displayName: 'Xx_Maïté_xX',
+                avatarUrl: 'https://static1.purepeople.com/articles/0/40/02/80/@/5755253-maite-lors-d-une-conference-de-presse-po-1200x0-3.jpg',
+            },
+
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            lastLogin: new Date(),
+        };
+
+        it('should return the user', async () => {
+            const expectedResult = updatedUser;
+
+            const prismaFindUniqueResponse: User = userExample;
+            prismaService.user.findUnique = jest.fn().mockResolvedValueOnce(prismaFindUniqueResponse);
+
+            const prismaUpdateResponse = updatedUser;
+            prismaService.user.update = jest.fn().mockResolvedValueOnce(prismaUpdateResponse);
+
+            const result = await usersService.updateProfile('uuid-uuid-uuid-uuid', { displayName: 'Xx_Maïté_xX' });
+
+            expect(result).toEqual(expectedResult);
+            expect(prismaService.user.findUnique).toHaveBeenCalled();
+            expect(prismaService.user.update).toHaveBeenCalled();
+        });
+
+        it('should throw error if user does not exist', () => {
+            const expectedNotFoundError: NotFoundException = new NotFoundException('No user found');
+
+            const prismaFindUniqueResponse: User = null;
+            prismaService.user.findUnique = jest.fn().mockResolvedValueOnce(prismaFindUniqueResponse);
+
+            const result = usersService.updateProfile('uuid_bad-uuid_bad-uuid_bad-uuid_bad', { displayName: 'Xx_Maïté_xX' });
+
+            expect(result).rejects.toThrow(expectedNotFoundError);
+            expect(prismaService.user.findUnique).toHaveBeenCalled();
         });
 
     });
