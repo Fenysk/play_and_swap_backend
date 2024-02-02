@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { Item } from '@prisma/client';
 import { Public } from 'src/auth/decorator/is-public.decorator';
-import { GetUser } from 'src/users/decorator';
+import { GetUser, Roles } from 'src/users/decorator';
+import { Role } from 'src/users/entities';
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemsService } from './items.service';
 
@@ -35,6 +36,7 @@ export class ItemsController {
         return this.itemsService.getItemById(itemId);
     }
 
+    @Roles(Role.SELLER)
     @Post()
     async createNewItem(
         @Body() data: CreateItemDto,
@@ -43,16 +45,18 @@ export class ItemsController {
         return this.itemsService.createNewItem(data, sellerId);
     }
 
+    @Roles(Role.SELLER)
     @Delete(':id')
-    async deleteItem(
+    async deleteMyItem(
         @Param('id') itemId: string,
         @GetUser('sub') sellerId: string,
     ): Promise<string> {
         return this.itemsService.deleteItem(itemId, sellerId);
     }
 
+    @Roles(Role.SELLER)
     @Put(':id')
-    async updateItem(
+    async updateMyItem(
         @Param('id') itemId: string,
         @Body() data: any,
         @GetUser('sub') sellerId: string,
