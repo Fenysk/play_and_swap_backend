@@ -91,6 +91,74 @@ describe('ItemsService', () => {
 
     });
 
+
+    describe('getItemsBySellerId', () => {
+
+        it('should return an array of items', async () => {
+            const expectedResult = [itemExample, itemExample];
+
+            const prismaResponse = [itemExample, itemExample];
+            prismaService.item.findMany = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = await itemsService.getItemsBySellerId('uuid_user-uuid_user');
+
+            expect(result).toEqual(expectedResult);
+            expect(prismaService.item.findMany).toHaveBeenCalled();
+        });
+
+        it('should return a limited array of items', async () => {
+            const prismaResponse = [itemExample, itemExample];
+            prismaService.item.findMany = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = await itemsService.getItemsBySellerId('uuid_user-uuid_user', 2, 2);
+
+            expect(result).toHaveLength(2);
+            expect(prismaService.item.findMany).toHaveBeenCalled();
+        });
+
+        it('should throw 404 error', () => {
+            const prismaResponse = [];
+            prismaService.item.findMany = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = itemsService.getItemsBySellerId('uuid_user-uuid_user');
+
+            expect(result).rejects.toThrow();
+            expect(prismaService.item.findMany).toHaveBeenCalled();
+        });
+
+    });
+
+
+    describe('getItemById', () => {
+
+        it('should return the item', async () => {
+            const expectedResult = itemExample;
+
+            const prismaResponse = itemExample;
+            prismaService.item.findUnique = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = await itemsService.getItemById('uuid_item-uuid_item');
+
+            expect(result).toEqual(expectedResult);
+            expect(prismaService.item.findUnique).toHaveBeenCalled();
+        });
+
+
+        it('should throw 404 error', () => {
+            const expectedError = new NotFoundException('Item not found');
+
+            const prismaResponse: Item = null;
+            prismaService.item.findUnique = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = itemsService.getItemById('uuid_item-uuid_item');
+
+            expect(result).rejects.toThrow(expectedError);
+            expect(prismaService.item.findUnique).toHaveBeenCalled();
+        });
+
+    });
+
+
     describe('createNewItem', () => {
 
         const newItem: CreateItemDto = {
@@ -258,7 +326,6 @@ describe('ItemsService', () => {
             expect(result).rejects.toThrow(expectedError);
             expect(prismaService.item.findUnique).toHaveBeenCalled();
         });
-
 
     });
 

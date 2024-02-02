@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { Item } from '@prisma/client';
 import { Public } from 'src/auth/decorator/is-public.decorator';
 import { GetUser } from 'src/users/decorator';
@@ -13,10 +13,26 @@ export class ItemsController {
     @Public()
     @Get('feed/recent')
     async getRecentFeed(
-        @Param('page') page?: number,
-        @Param('limit') limit?: number
+        @Query('page', ParseIntPipe) page?: number,
+        @Query('limit', ParseIntPipe) limit?: number
     ): Promise<Item[]> {
         return this.itemsService.getRecentFeed(page, limit);
+    }
+
+    @Public()
+    @Get('seller/:id')
+    async getItemsBySellerId(
+        @Param('id') sellerId: string,
+        @Query('page', ParseIntPipe) page?: number,
+        @Query('limit', ParseIntPipe) limit?: number
+    ): Promise<Item[]> {
+        return this.itemsService.getItemsBySellerId(sellerId, page, limit);
+    }
+
+    @Public()
+    @Get(':id')
+    async getItemById(@Param('id') itemId: string): Promise<Item> {
+        return this.itemsService.getItemById(itemId);
     }
 
     @Post()

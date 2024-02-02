@@ -33,6 +33,41 @@ export class ItemsService {
         return items;
     }
 
+    async getItemsBySellerId(sellerId: string, page: number = 1, limit: number = 100) {
+        const items = await this.prismaService.item.findMany({
+            where: { sellerId },
+            include: {
+                Platform: true,
+                Seller: { select: { Profile: true }, },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+
+        if (!items.length)
+            throw new NotFoundException(`No items found`);
+
+        return items;
+    }
+
+    async getItemById(itemId: string) {
+        const item = await this.prismaService.item.findUnique({
+            where: { gameId: itemId },
+            include: {
+                Platform: true,
+                Seller: { select: { Profile: true }, },
+            },
+        });
+
+        if (!item)
+            throw new NotFoundException(`Item not found`);
+
+        return item;
+    }
+
     async createNewItem(data: CreateItemDto, sellerId: string) {
 
         const {
