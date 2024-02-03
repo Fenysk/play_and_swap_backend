@@ -7,17 +7,6 @@
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
@@ -25,6 +14,72 @@
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+## Installation with Docker
+
+### Development
+
+#### Environment variables
+
+Create **.env** file in the root directory and add the following environment variables:
+
+```env
+NODE_ENV="development"
+PORT=3621
+
+POSTGRES_USER="user"
+POSTGRES_PASSWORD="password"
+POSTGRES_DB="database"
+DATABASE_URL=`postgresql://user:password@db:5432/database?schema=public`
+
+JWT_ACCESS_SECRET='my_secret_key'
+JWT_REFRESH_SECRET='my_secret_key'
+
+API_URL=`http://localhost:${PORT}/api`
+
+# Resend
+RESEND_API_KEY='your_api_key'
+RESEND_FROM_ADDRESS='Display Name <address@email.com>'
+```
+
+#### Build the image and run the container
+
+```bash
+# Execute docker-compose.yml file.
+$ docker-compose up --build
+```
+
+### Production
+
+#### Environment variables
+
+Create **.env** file in the root directory and add the following environment variables:
+
+```env
+NODE_ENV="production"
+PORT=3926
+
+POSTGRES_USER="user"
+POSTGRES_PASSWORD="password"
+POSTGRES_DB="database"
+DATABASE_URL=`postgresql://user:password@db:5432/database?schema=public`
+
+JWT_ACCESS_SECRET='my_secret_key'
+JWT_REFRESH_SECRET='my_secret_key'
+
+API_URL=`http://localhost:${PORT}/api`
+
+# Resend
+RESEND_API_KEY='your_api_key'
+RESEND_FROM_ADDRESS='Display Name <address@email.com>'
+```
+
+#### Build the image and run the container
+
+```bash
+# Execute docker-compose.yml file.
+$ docker-compose -f docker-compose.prod.yml up --build
+```
 
 ## Installation
 

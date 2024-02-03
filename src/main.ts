@@ -5,7 +5,6 @@ import { JwtAccessTokenGuard } from './auth/guards/jwt-access-token.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { PrismaClientExceptionFilter } from './prisma/filters/prisma/prisma-exception.filter';
 
-
 async function bootstrap() {
 
     // NestJS
@@ -35,6 +34,9 @@ async function bootstrap() {
     });
 
     // Run
-    await app.listen(3621);
+    const PORT = process.env.NEST_PORT || 3621;
+    await app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT} 🚀`);
+    });
 }
 bootstrap();
