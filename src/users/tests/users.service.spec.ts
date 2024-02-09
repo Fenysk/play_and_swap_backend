@@ -253,6 +253,37 @@ describe('UsersService', () => {
 
     });
 
+    describe('becomeAdmin', () => {
+
+        const adminExample: User = {
+            ...userExample,
+            roles: ['USER', 'ADMIN'],
+        }
+
+        it('should return a user', async () => {
+            const expectedResult: string = 'You are now an admin';
+
+            const prismaResponse: User = adminExample;
+            prismaService.user.update = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = await usersService.becomeAdmin('uuid-uuid-uuid-uuid');
+
+            expect(result).toEqual(expectedResult);
+            expect(prismaService.user.update).toHaveBeenCalled();
+        });
+
+        it('should throw error if user does not exist', () => {
+            const expectedNotFoundError: NotFoundException = new NotFoundException('No user found');
+            prismaService.user.update = jest.fn().mockRejectedValueOnce(expectedNotFoundError);
+
+            const result = usersService.becomeAdmin('bad_uuid-bad_uuid-bad_uuid-bad_uuid');
+
+            expect(result).rejects.toThrow(expectedNotFoundError);
+            expect(prismaService.user.update).toHaveBeenCalled();
+        });
+        
+    });
+
     describe('updateUser', () => {
 
         it('should return a user', async () => {

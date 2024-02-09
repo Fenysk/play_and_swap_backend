@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import * as argon2 from "argon2";
 import { PublicUser } from 'src/users/entities/public-user.model';
 import { UsersService } from 'src/users/users.service';
@@ -91,7 +91,7 @@ export class AuthService {
         await this.userService.updateUser(user.userId, {
             confirmed: true,
             confirmationId: null,
-            roles: { push: 'USER' }
+            roles: { push: Role.USER }
         });
 
         await this.emailService.sendEmailWelcome(user);

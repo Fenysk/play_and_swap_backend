@@ -101,6 +101,31 @@ export class UsersService {
         return 'You are now a seller';
     }
 
+    async becomeAdmin(userId: string): Promise<string> {
+        const users = await this.prismaService.user.findMany();
+
+        if (users.length !== 1)
+            throw new ForbiddenException('You are not authorized to perform this action');
+
+        const user = this.prismaService.user.findUnique({
+            where: { userId }
+        });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
+        await this.prismaService.user.update({
+            where: { userId },
+            data: {
+                roles: {
+                    push: Role.ADMIN
+                }
+            }
+        });
+
+        return 'You are now an admin';
+    }
+
     async updateUser(userId: string, data: any): Promise<User> {
         try {
             const updatedUser = await this.prismaService.user.update({

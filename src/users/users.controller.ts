@@ -38,6 +38,12 @@ export class UsersController {
     }
 
     @Roles(Role.USER)
+    @Post('become-admin')
+    async becomeAdmin(@GetUser('sub') user_id: any): Promise<string> {
+        return await this.usersService.becomeAdmin(user_id);
+    }
+
+    @Roles(Role.USER)
     @Put('update/me')
     @HttpCode(HttpStatus.OK)
     async updateMe(@GetUser('sub') user_id: any, @Body() data: any): Promise<object> {
