@@ -222,6 +222,37 @@ describe('UsersService', () => {
 
     });
 
+    describe('becomeSeller', () => {
+
+        const sellerExample: User = {
+            ...userExample,
+            roles: ['USER', 'SELLER'],
+        }
+
+        it('should return a user', async () => {
+            const expectedResult: string = 'You are now a seller';
+
+            const prismaResponse: User = sellerExample;
+            prismaService.user.update = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = await usersService.becomeSeller('uuid-uuid-uuid-uuid');
+
+            expect(result).toEqual(expectedResult);
+            expect(prismaService.user.update).toHaveBeenCalled();
+        });
+
+        it('should throw error if user does not exist', () => {
+            const expectedNotFoundError: NotFoundException = new NotFoundException('No user found');
+            prismaService.user.update = jest.fn().mockRejectedValueOnce(expectedNotFoundError);
+
+            const result = usersService.becomeSeller('bad_uuid-bad_uuid-bad_uuid-bad_uuid');
+
+            expect(result).rejects.toThrow(expectedNotFoundError);
+            expect(prismaService.user.update).toHaveBeenCalled();
+        });
+
+    });
+
     describe('updateUser', () => {
 
         it('should return a user', async () => {

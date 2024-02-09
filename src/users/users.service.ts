@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import * as argon2 from "argon2";
 import { PrismaService } from '../prisma/prisma.service';
 import { InputUserDto } from './dto';
@@ -79,6 +79,26 @@ export class UsersService {
         } catch (error) {
             throw error
         }
+    }
+
+    async becomeSeller(userId: string): Promise<string> {
+        const user = this.prismaService.user.findUnique({
+            where: { userId }
+        });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
+        await this.prismaService.user.update({
+            where: { userId },
+            data: {
+                roles: {
+                    push: Role.SELLER
+                }
+            }
+        });
+
+        return 'You are now a seller';
     }
 
     async updateUser(userId: string, data: any): Promise<User> {

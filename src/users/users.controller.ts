@@ -32,6 +32,12 @@ export class UsersController {
     }
 
     @Roles(Role.USER)
+    @Post('become-seller')
+    async becomeSeller(@GetUser('sub') user_id: any): Promise<string> {
+        return await this.usersService.becomeSeller(user_id);
+    }
+
+    @Roles(Role.USER)
     @Put('update/me')
     @HttpCode(HttpStatus.OK)
     async updateMe(@GetUser('sub') user_id: any, @Body() data: any): Promise<object> {
