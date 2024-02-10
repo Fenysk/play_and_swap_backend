@@ -36,7 +36,11 @@ export class ItemsService {
 
     async getItemsBySellerId(sellerId: string, page: number = 1, limit: number = 100) {
         const items = await this.prismaService.item.findMany({
-            where: { sellerId },
+            where: {
+                sellerId,
+                isVisible: true,
+                isSold: false,
+            },
             include: {
                 Platform: true,
                 Seller: { select: { Profile: true }, },
@@ -168,6 +172,28 @@ export class ItemsService {
         });
 
         return updatedItem;
+    }
+
+    async declareItemAsSold(itemId: string, sellerId: string) {
+        const item = await this.prismaService.item.findUnique({
+            where: { gameId: itemId },
+            select: {
+                sellerId: true,
+                title: true
+            },
+        });
+
+        if (!item || item.sellerId !== sellerId)
+            throw new NotFoundException(`Item not found`);
+
+        await this.prismaService.item.update({
+            where: { gameId: itemId },
+            data: {
+                isSold: true,
+            }
+        });
+
+        return `Item ${item.title} declared as sold !`;
     }
 
 }

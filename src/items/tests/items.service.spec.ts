@@ -329,4 +329,36 @@ describe('ItemsService', () => {
 
     });
 
+    describe('declareItemAsSold', () => {
+
+        it('should return the updated item', async () => {
+            const expectedResult = 'Item Super Mario 64 declared as sold !';
+
+            const prismaFindUniqueResponse = itemExample;
+            prismaService.item.findUnique = jest.fn().mockResolvedValueOnce(prismaFindUniqueResponse);
+
+            const prismaUpdateResponse = { ...itemExample, isSold: true };
+            prismaService.item.update = jest.fn().mockResolvedValueOnce(prismaUpdateResponse);
+
+            const result = await itemsService.declareItemAsSold('uuid_item-uuid_item', 'uuid_user-uuid_user');
+
+            expect(result).toEqual(expectedResult);
+            expect(prismaService.item.findUnique).toHaveBeenCalled();
+            expect(prismaService.item.update).toHaveBeenCalled();
+        });
+
+        it('should throw error if item not found', () => {
+            const expectedError = new NotFoundException('Item not found');
+
+            const prismaResponse: Item = null;
+            prismaService.item.findUnique = jest.fn().mockResolvedValueOnce(prismaResponse);
+
+            const result = itemsService.declareItemAsSold('uuid_item-uuid_item', 'uuid_user-uuid_user');
+
+            expect(result).rejects.toThrow(expectedError);
+            expect(prismaService.item.findUnique).toHaveBeenCalled();
+        });
+
+    });
+
 });

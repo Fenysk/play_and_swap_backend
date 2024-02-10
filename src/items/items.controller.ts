@@ -72,6 +72,15 @@ export class ItemsController {
         return this.itemsService.updateItem(itemId, data, sellerId);
     }
 
+    @Roles(Role.SELLER)
+    @Put(':id/sold')
+    async declareItemAsSold(
+        @Param('id') itemId: string,
+        @GetUser('sub') sellerId: string,
+    ): Promise<string> {
+        return this.itemsService.declareItemAsSold(itemId, sellerId);
+    }
+
 
 
 }
