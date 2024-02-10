@@ -3,6 +3,8 @@ import { Role, User } from '@prisma/client';
 import * as argon2 from "argon2";
 import { PrismaService } from '../prisma/prisma.service';
 import { InputUserDto } from './dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateInformationDto } from './dto/update-information.dto';
 
 @Injectable()
 export class UsersService {
@@ -161,7 +163,7 @@ export class UsersService {
         return updatedUser;
     }
 
-    async updateProfile(userId: string, data: any): Promise<any> {
+    async updateProfile(userId: string, data: UpdateProfileDto): Promise<any> {
         const user = await this.prismaService.user.findUnique({
             where: { userId },
             include: { Profile: true }
@@ -179,6 +181,30 @@ export class UsersService {
             },
             select: {
                 Profile: true
+            }
+        });
+
+        return updatedUser;
+    }
+
+    async updateInformation(userId: string, data: UpdateInformationDto): Promise<any> {
+        const user = await this.prismaService.user.findUnique({
+            where: { userId },
+            include: { UserDetails: true }
+        });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
+        const updatedUser = await this.prismaService.user.update({
+            where: { userId },
+            data: {
+                UserDetails: {
+                    update: data
+                }
+            },
+            select: {
+                UserDetails: true
             }
         });
 

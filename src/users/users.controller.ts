@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put }
 import { GetUser, Roles } from './decorator';
 import { Role } from './entities';
 import { UsersService } from './users.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateInformationDto } from './dto/update-information.dto';
 
 @Controller('users')
 export class UsersController {
@@ -53,8 +55,21 @@ export class UsersController {
     @Roles(Role.USER)
     @Put('update/my-profile')
     @HttpCode(HttpStatus.OK)
-    async updateMyProfile(@GetUser('sub') user_id: any, @Body() data: any): Promise<object> {
+    async updateMyProfile(
+        @GetUser('sub') user_id: any,
+        @Body() data: UpdateProfileDto
+    ): Promise<object> {
         return await this.usersService.updateProfile(user_id, data);
+    }
+
+    @Roles(Role.USER)
+    @Put('update/my-information')
+    @HttpCode(HttpStatus.OK)
+    async updateMyInformation(
+        @GetUser('sub') user_id: any,
+        @Body() data: UpdateInformationDto
+    ): Promise<object> {
+        return await this.usersService.updateInformation(user_id, data);
     }
 
     @Roles(Role.ADMIN)
