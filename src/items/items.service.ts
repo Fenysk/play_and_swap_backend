@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PriceConverterService } from 'src/utils/price-converter/price-converter.service';
 import { CreateItemDto } from './dto/create-item.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class ItemsService {
@@ -127,6 +128,22 @@ export class ItemsService {
         });
 
         if (!item || item.sellerId !== sellerId)
+            throw new NotFoundException(`Item not found`);
+
+        await this.prismaService.item.delete({
+            where: { gameId: itemId }
+        });
+
+        return `Item ${item.title} deleted !`;
+    }
+
+    async deleteItemByAdmin(itemId: string) {
+        const item = await this.prismaService.item.findUnique({
+            where: { gameId: itemId },
+            select: { title: true },
+        });
+
+        if (!item)
             throw new NotFoundException(`Item not found`);
 
         await this.prismaService.item.delete({

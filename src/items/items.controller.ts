@@ -54,6 +54,14 @@ export class ItemsController {
         return this.itemsService.deleteItem(itemId, sellerId);
     }
 
+    @Roles(Role.ADMIN)
+    @Delete(':id/admin')
+    async deleteItemByAdmin(
+        @Param('id') itemId: string,
+    ): Promise<string> {
+        return this.itemsService.deleteItemByAdmin(itemId);
+    }
+
     @Roles(Role.SELLER)
     @Put(':id')
     async updateMyItem(

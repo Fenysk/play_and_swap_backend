@@ -26,6 +26,7 @@ model User {
     Profile     Profile?
     UserDetails UserDetails?
     Item        Item[]
+    Report      Report[]
 }
 
 model UserDetails {
@@ -82,6 +83,23 @@ model Item {
     views     Int      @default(0)
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
+
+    Report Report[]
+}
+
+model Report {
+    reportId String @id @unique @default(uuid()) @map("report_id")
+
+    gameId String @map("game_id")
+    userId String @map("user_id")
+
+    reason  String
+    message String?
+
+    createdAt DateTime @default(now()) @map("created_at")
+    
+    Item Item @relation(fields: [gameId], references: [gameId])
+    User User @relation(fields: [userId], references: [userId])
 }
 
 model Platform {
