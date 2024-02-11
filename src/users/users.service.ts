@@ -34,6 +34,25 @@ export class UsersService {
         return user;
     }
 
+    async getDetailedMe(userId: string): Promise<User> {
+        const user = await this.prismaService.user.findUnique({
+            where: { userId },
+            include: {
+                Profile: true,
+                UserDetails: true
+            }
+        });
+
+        if (!user)
+            throw new NotFoundException('No user found');
+
+        delete user.hashedPassword;
+        delete user.hashedRefreshToken;
+        delete user.confirmationId;
+
+        return user;
+    }
+
     async getUserByEmail(email: string): Promise<User> {
         const user = await this.prismaService.user.findUnique({ where: { email } });
 

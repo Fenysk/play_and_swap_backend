@@ -21,6 +21,12 @@ export class UsersController {
         return user;
     }
 
+    @Roles(Role.USER)
+    @Get('detailed-me')
+    async getDetailedMe(@GetUser('sub') user_id: any): Promise<object> {
+        return await this.usersService.getDetailedMe(user_id);
+    }
+
     @Roles(Role.ADMIN)
     @Get(':user_id')
     async getUserById(@Param('user_id') user_id: string): Promise<object> {
