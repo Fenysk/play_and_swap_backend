@@ -31,6 +31,16 @@ export class ItemsController {
     }
 
     @Public()
+    @Get('pseudo/:pseudo')
+    async getItemsBySellerPseudo(
+        @Param('pseudo') pseudo: string,
+        @Query('page', ParseIntPipe) page?: number,
+        @Query('limit', ParseIntPipe) limit?: number
+    ): Promise<Item[]> {
+        return this.itemsService.getItemsBySellerPseudo(pseudo, page, limit);
+    }
+
+    @Public()
     @Get(':id')
     async getItemById(@Param('id') itemId: string): Promise<Item> {
         return this.itemsService.getItemById(itemId);

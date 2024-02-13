@@ -1,8 +1,7 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PriceConverterService } from 'src/utils/price-converter/price-converter.service';
 import { CreateItemDto } from './dto/create-item.dto';
-import { Role } from '@prisma/client';
 
 @Injectable()
 export class ItemsService {
@@ -38,6 +37,34 @@ export class ItemsService {
         const items = await this.prismaService.item.findMany({
             where: {
                 sellerId,
+                isVisible: true,
+                isSold: false,
+            },
+            include: {
+                Platform: true,
+                Seller: { select: { Profile: true }, },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+
+        if (!items.length)
+            throw new NotFoundException(`No items found`);
+
+        return items;
+    }
+
+    async getItemsBySellerPseudo(pseudo: string, page: number = 1, limit: number = 100) {
+        const items = await this.prismaService.item.findMany({
+            where: {
+                Seller: {
+                    Profile: {
+                        displayName: pseudo
+                    }
+                },
                 isVisible: true,
                 isSold: false,
             },
