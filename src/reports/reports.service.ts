@@ -7,7 +7,16 @@ export class ReportsService {
     constructor(private readonly prismaService: PrismaService) { }
 
     async getAllReports() {
-        const reports = await this.prismaService.report.findMany();
+        const reports = await this.prismaService.report.findMany({
+            include: {
+                Item: {
+                    include: {
+                        Seller: true
+                    }
+                },
+                User: true
+            }
+        });
 
         if (!reports.length)
             throw new NotFoundException('No reports found');
