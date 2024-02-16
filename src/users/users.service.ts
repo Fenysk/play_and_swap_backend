@@ -3,8 +3,8 @@ import { Role, User } from '@prisma/client';
 import * as argon2 from "argon2";
 import { PrismaService } from '../prisma/prisma.service';
 import { InputUserDto } from './dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateInformationDto } from './dto/update-information.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -170,7 +170,7 @@ export class UsersService {
         const isPasswordValid = await argon2.verify(user.hashedPassword, oldPassword);
 
         if (!isPasswordValid)
-            throw new ForbiddenException('Error updating password');
+            throw new ForbiddenException('Your old password is incorrect');
 
         const hashedPassword = await argon2.hash(newPassword);
 

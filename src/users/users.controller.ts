@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { GetUser, Roles } from './decorator';
+import { UpdateInformationDto } from './dto/update-information.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Role } from './entities';
 import { UsersService } from './users.service';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { UpdateInformationDto } from './dto/update-information.dto';
 
 @Controller('users')
 export class UsersController {
@@ -78,18 +78,18 @@ export class UsersController {
         return await this.usersService.updateInformation(user_id, data);
     }
 
+    @Roles(Role.USER)
+    @Put('update/my-password')
+    @HttpCode(HttpStatus.OK)
+    async updateMyPassword(@GetUser('sub') user_id: string, @Body() data: any): Promise<object> {
+        return await this.usersService.updateMyPassword(user_id, data);
+    }
+
     @Roles(Role.ADMIN)
     @Put('update/:user_id')
     @HttpCode(HttpStatus.OK)
     async updateUser(@Param('user_id') user_id: string, @Body() data: any): Promise<object> {
         return await this.usersService.updateUser(user_id, data);
-    }
-
-    @Roles(Role.USER)
-    @Put('update/password/me')
-    @HttpCode(HttpStatus.OK)
-    async updateMyPassword(@GetUser('sub') user_id: string, @Body() data: any): Promise<object> {
-        return await this.usersService.updateMyPassword(user_id, data);
     }
 
     @Roles(Role.ADMIN)
