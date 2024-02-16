@@ -93,6 +93,13 @@ export class UsersController {
     }
 
     @Roles(Role.ADMIN)
+    @Put('update/:user_id/information')
+    @HttpCode(HttpStatus.OK)
+    async updateInformationByAdmin(@Param('user_id') user_id: string, @Body() data: any): Promise<object> {
+        return await this.usersService.updateInformation(user_id, data);
+    }
+
+    @Roles(Role.ADMIN)
     @Delete(':user_id')
     async deleteUser(@Param('user_id') user_id: string): Promise<string> {
         return await this.usersService.deleteUser(user_id);
