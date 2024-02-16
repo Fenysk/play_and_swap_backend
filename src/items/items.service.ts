@@ -97,7 +97,16 @@ export class ItemsService {
         if (!item)
             throw new NotFoundException(`Item not found`);
 
-        return item;
+        const updatedItem = await this.prismaService.item.update({
+            where: { gameId: itemId },
+            data: {
+                views: {
+                    increment: 1
+                }
+            }
+        });
+
+        return updatedItem;
     }
 
     async createNewItem(data: CreateItemDto, sellerId: string) {
