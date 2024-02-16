@@ -86,10 +86,10 @@ export class UsersController {
     }
 
     @Roles(Role.ADMIN)
-    @Put('update/:user_id')
+    @Put('update/:user_id/profile')
     @HttpCode(HttpStatus.OK)
-    async updateUser(@Param('user_id') user_id: string, @Body() data: any): Promise<object> {
-        return await this.usersService.updateUser(user_id, data);
+    async updateProfileByAdmin(@Param('user_id') user_id: string, @Body() data: any): Promise<object> {
+        return await this.usersService.updateProfile(user_id, data);
     }
 
     @Roles(Role.ADMIN)
