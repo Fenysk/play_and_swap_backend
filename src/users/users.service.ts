@@ -13,7 +13,12 @@ export class UsersService {
     ) { }
 
     async getAllUsers(): Promise<User[]> {
-        const users = await this.prismaService.user.findMany();
+        const users = await this.prismaService.user.findMany({
+            include: {
+                Profile: true,
+                UserDetails: true
+            }
+        });
 
         if (!users.length)
             throw new NotFoundException('No users found');
@@ -24,7 +29,15 @@ export class UsersService {
     }
 
     async getUserById(id: string): Promise<any> {
-        const user = await this.prismaService.user.findUnique({ where: { userId: id } });
+        const user = await this.prismaService.user.findUnique(
+            {
+                where: { userId: id },
+                include: {
+                    Profile: true,
+                    UserDetails: true
+                }
+            },
+        );
 
         if (!user)
             throw new NotFoundException('No user found');
