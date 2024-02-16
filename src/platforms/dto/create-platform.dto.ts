@@ -1,5 +1,5 @@
 import { Manufacturer } from "@prisma/client";
-import { IsDateString, IsNotEmpty, IsNumber } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class CreatePlatformDto {
 
@@ -17,5 +17,6 @@ export class CreatePlatformDto {
     @IsNumber()
     generation: number;
 
-    logoUrl?: string
+    @IsOptional()
+    logoUrl: string
 }
